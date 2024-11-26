@@ -234,6 +234,9 @@ if __name__ == '__main__':
     
     df1 = pd.read_csv(filename, sep='\t', on_bad_lines='skip', names=['serial_number','redacted_text'])
     
+    df['redacted_text'] = df['redacted_text'].fillna('')  # Replace NaN with empty string
+    df1['redacted_text'] = df1['redacted_text'].fillna('')  # Replace NaN with empty string
+
     tfidf_vectorizer1 = TfidfVectorizer(max_features=300)
     tfidf_vectorizer1.fit(pd.concat([df['redacted_text'], df1['redacted_text']]))
 
