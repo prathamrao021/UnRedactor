@@ -208,12 +208,12 @@ if __name__ == '__main__':
         feature_dicts_val, _, vectorized_features_val = extract_features_with_sentiment(sia, nlp, validation_df, tfidf_vectorizer, dict_vectorizer=dict_vectorizer)
     
     
-    if os.path.exists('resources/training_model.pkl'):
-        model = joblib.load('resources/training_model.pkl')
-    else:
-        # Train the model
-        model = train_model(vectorized_features, training_df)
-        joblib.dump(model, 'resources/training_model.pkl')
+    # if os.path.exists('resources/training_model.pkl'):
+    #     model = joblib.load('resources/training_model.pkl')
+    # else:
+    #     # Train the model
+    model = train_model(vectorized_features, training_df)
+        # joblib.dump(model, 'resources/training_model.pkl')
 
     # Evaluate the model
     print("Training Evaluation:")
@@ -224,7 +224,8 @@ if __name__ == '__main__':
         evaluate_model(model, validation_df, vectorized_features_val)
 
     #-------------------
-    # ---------------------------------------
+    #-------------------
+    #--------------------
     filename = sys.argv[1]
     
     if not filename:
@@ -240,11 +241,11 @@ if __name__ == '__main__':
 
     test_feature_dicts, test_dict_vectorizer, test_vectorized_features = extract_features_with_sentiment(sia ,nlp, df1, tfidf_vectorizer1, dict_vectorizer=total_dict_vectorizer)
 
-    if os.path.exists('resources/testing_model.pkl'):
-        model1 = joblib.load('resources/testing_model.pkl')
-    else:
-        model1 = train_model(total_vectorized_features, df)
-        joblib.dump(model1, 'resources/testing_model.pkl')
+    # if os.path.exists('resources/testing_model.pkl'):
+    #     model1 = joblib.load('resources/testing_model.pkl')
+    # else:
+    model1 = train_model(total_vectorized_features, df)
+        # joblib.dump(model1, 'resources/testing_model.pkl')
 
     # evaluate_model(model1, df1, test_vectorized_features)
     dump_predicitons_to_file(model1, test_vectorized_features)
