@@ -1,8 +1,14 @@
+
 import pandas as pd
 import spacy
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import Pipeline
 from nltk.sentiment import SentimentIntensityAnalyzer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction import DictVectorizer
+from sklearn.naive_bayes import MultinomialNB
 import numpy as np
 import nltk
 from sklearn.ensemble import RandomForestClassifier
@@ -124,6 +130,8 @@ def train_model(vectorized_features_train, training_df):
     # Train the model
     rf_model.fit(vectorized_features_train, training_df['names'].tolist())
 
+    
+    
     return rf_model
 
 
@@ -154,16 +162,17 @@ def evaluate_model(rf_model, validation_df, vectorized_features_val):
     print(f"Precision: {precision:.4f}")
     print(f"Recall: {recall:.4f}")
     print(f"F1-Score: {f1:.4f}")
-
+    # print("\nClassification Report:")
+    # print(classification_report(validation_df['names'].tolist(), y_pred))
     return y_pred
 
 
 def dump_predicitons_to_file(rf_model, vectorized_features_val):
     y_pred = rf_model.predict(vectorized_features_val)
 
-    with open('resources/predictions.txt', 'w') as f:
-        for name in y_pred:
-            f.write(name + '\n')
+    with open('submission.tsv', 'w') as f:
+        for idx, name in enumerate(y_pred):
+            f.write(str(idx+1)+"\t"+name+'\n')
 
 
 if __name__ == '__main__':
@@ -192,9 +201,9 @@ if __name__ == '__main__':
     # tfidf_vectorizer, tfidf_embeddings = get_tfidf_embeddings(df['redacted_text'].tolist())
 
     feature_dicts, dict_vectorizer, vectorized_features = extract_features_with_sentiment(training_df, tfidf_vectorizer)
-
-    # The dict_vectorizer fit on the training data is used to transform the validation data, to ensure consistent features
-    feature_dicts_val, _, vectorized_features_val = extract_features_with_sentiment(validation_df, tfidf_vectorizer, dict_vectorizer=dict_vectorizer)
+    if  not validation_df.empty:
+        # The dict_vectorizer fit on the training data is used to transform the validation data, to ensure consistent features
+        feature_dicts_val, _, vectorized_features_val = extract_features_with_sentiment(validation_df, tfidf_vectorizer, dict_vectorizer=dict_vectorizer)
 
     # Train the model
     model = train_model(vectorized_features, training_df)
@@ -202,20 +211,20 @@ if __name__ == '__main__':
     # Evaluate the model
     print("Training Evaluation:")
     evaluate_model(model, training_df, vectorized_features)
-
-    print("\nValidation Evaluation:")
-    evaluate_model(model, validation_df, vectorized_features_val)
+    
+    if  not validation_df.empty:
+        print("Validation Evaluation:")
+        evaluate_model(model, validation_df, vectorized_features_val)
 
     #-------------------
     # ---------------------------------------
-
     filename = sys.argv[1]
     
     if not filename:
         print("Please provide a filename to unredact.")
         sys.exit(1)
     
-    df1 = pd.read_csv(filename, sep='\t', on_bad_lines='skip', names=['serial_no','redacted_text'])
+    df1 = pd.read_csv(filename, sep='\t', on_bad_lines='skip', names=['serial_number','redacted_text'])
     
     tfidf_vectorizer1 = TfidfVectorizer(max_features=300)
     tfidf_vectorizer1.fit(pd.concat([df['redacted_text'], df1['redacted_text']]))
@@ -226,6 +235,5 @@ if __name__ == '__main__':
 
     model1 = train_model(total_vectorized_features, df)
 
-    print("Testing Evaluation:")
     # evaluate_model(model1, df1, test_vectorized_features)
     dump_predicitons_to_file(model1, test_vectorized_features)

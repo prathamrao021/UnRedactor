@@ -31,7 +31,7 @@ def get_tfidf_embeddings(texts):
     return tfidf_vectorizer, tfidf_embeddings
 
 # Updated Feature Extraction
-def extract_features_with_sentiment(df, tfidf_vectorizer, dict_vectorizer=None):
+def extract_features_with_sentiment(sia, nlp, df, tfidf_vectorizer, dict_vectorizer=None):
     """
     Extract linguistic, semantic, positional, and statistical features.
     """
@@ -202,11 +202,12 @@ if __name__ == '__main__':
     # Extract TF-IDF embeddings
     # tfidf_vectorizer, tfidf_embeddings = get_tfidf_embeddings(df['redacted_text'].tolist())
 
-    feature_dicts, dict_vectorizer, vectorized_features = extract_features_with_sentiment(training_df, tfidf_vectorizer)
+    feature_dicts, dict_vectorizer, vectorized_features = extract_features_with_sentiment(sia, nlp, training_df, tfidf_vectorizer)
     if  not validation_df.empty:
         # The dict_vectorizer fit on the training data is used to transform the validation data, to ensure consistent features
-        feature_dicts_val, _, vectorized_features_val = extract_features_with_sentiment(validation_df, tfidf_vectorizer, dict_vectorizer=dict_vectorizer)
-
+        feature_dicts_val, _, vectorized_features_val = extract_features_with_sentiment(sia, nlp, validation_df, tfidf_vectorizer, dict_vectorizer=dict_vectorizer)
+    
+    
     if os.path.exists('resources/training_model.pkl'):
         model = joblib.load('resources/training_model.pkl')
     else:
@@ -235,9 +236,9 @@ if __name__ == '__main__':
     tfidf_vectorizer1 = TfidfVectorizer(max_features=300)
     tfidf_vectorizer1.fit(pd.concat([df['redacted_text'], df1['redacted_text']]))
 
-    total_feature_dicts, total_dict_vectorizer, total_vectorized_features = extract_features_with_sentiment(df, tfidf_vectorizer1)
+    total_feature_dicts, total_dict_vectorizer, total_vectorized_features = extract_features_with_sentiment(sia, nlp, df, tfidf_vectorizer1)
 
-    test_feature_dicts, test_dict_vectorizer, test_vectorized_features = extract_features_with_sentiment(df1, tfidf_vectorizer1, dict_vectorizer=total_dict_vectorizer)
+    test_feature_dicts, test_dict_vectorizer, test_vectorized_features = extract_features_with_sentiment(sia ,nlp, df1, tfidf_vectorizer1, dict_vectorizer=total_dict_vectorizer)
 
     if os.path.exists('resources/testing_model.pkl'):
         model1 = joblib.load('resources/testing_model.pkl')
