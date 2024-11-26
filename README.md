@@ -49,7 +49,7 @@ The Unredactor project aims to identify and unredact names from redacted text us
     pipenv run python unredactor.py
     ```
 
-## Video Demonstration: [video](https://github.com/user-attachments/assets/08f0e00d-0d33-42d3-8d22-b6ce24e26a32)
+## Video Demonstration:[https://github.com/user-attachments/assets/08f0e00d-0d33-42d3-8d22-b6ce24e26a32](https://github.com/user-attachments/assets/a0e10884-6558-4625-9095-9755c4a648aa)
 
 ## Functions
 
