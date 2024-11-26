@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+spacy = "*"
+numpy = "*"
+nltk = "*"
+scikit-learn = "*"
+regex = "*"
+pandas = "*"
+google-api-python-client = "*"
+matplotlib = "*"
+networkx = "*"
+joblib = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.12"
